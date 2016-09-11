@@ -13,19 +13,23 @@
                 {
                     "file": "images/world",
                     "name": "IMG_WORLD",
-                    "targetPlatforms": null,
+                    "targetPlatforms": [
+                        "basalt",
+                        "chalk"
+                    ],
                     "type": "bitmap"
                 }
             ]
         },
         "sdkVersion": "3",
         "targetPlatforms": [
+            "basalt",
             "chalk"
         ],
         "uuid": "2468df67-e87b-4898-afe9-705e57d10796",
         "watchapp": {
-            "watchface": false
+            "watchface": true
         }
     },
-    "version": "1.0.0"
+    "version": "1.1.0"
 }

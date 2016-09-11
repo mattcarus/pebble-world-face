@@ -6,21 +6,19 @@ static BitmapLayer *s_background_layer;
 static GBitmap *s_background_bitmap;
 TextLayer *s_num_layer, *s_day_layer;
 static Layer *s_hands_layer;
-static GPath *s_minute_arrow, *s_hour_arrow;
+static GPath *s_second_arrow, *s_minute_arrow, *s_hour_arrow;
 
 static void hands_update_proc(Layer *layer, GContext *ctx) {
   GRect bounds = layer_get_bounds(layer);
-  GRect frame = grect_inset(bounds, GEdgeInsets(0));
   GPoint center = grect_center_point(&bounds);
 
   time_t now = time(NULL);
   struct tm *t = localtime(&now);
   
-  // minute/hour hand
+  // second/minute/hour hands
   graphics_context_set_fill_color(ctx, GColorOxfordBlue);
-  graphics_context_set_stroke_color(ctx, GColorClear);
-  graphics_context_set_stroke_width(ctx, 1);  // must be odd
-
+  graphics_context_set_stroke_color(ctx, GColorOxfordBlue);
+  
   gpath_rotate_to(s_minute_arrow, TRIG_MAX_ANGLE * t->tm_min / 60);
   gpath_draw_filled(ctx, s_minute_arrow);
   gpath_draw_outline(ctx, s_minute_arrow);
@@ -28,6 +26,10 @@ static void hands_update_proc(Layer *layer, GContext *ctx) {
   gpath_rotate_to(s_hour_arrow, (TRIG_MAX_ANGLE * (((t->tm_hour % 12) * 6) + (t->tm_min / 10))) / (12 * 6));
   gpath_draw_filled(ctx, s_hour_arrow);
   gpath_draw_outline(ctx, s_hour_arrow);
+
+  gpath_rotate_to(s_second_arrow, TRIG_MAX_ANGLE * t->tm_sec / 60);
+  gpath_draw_filled(ctx, s_second_arrow);
+  gpath_draw_outline(ctx, s_second_arrow);
 
   // dot in the middle
   graphics_fill_circle(ctx, center, 5);
@@ -54,7 +56,7 @@ static void window_load(Window *window) {
   layer_add_child(window_layer, s_hands_layer);
 }
 
-static void handle_minute_tick(struct tm *tick_time, TimeUnits units_changed) {
+static void handle_second_tick(struct tm *tick_time, TimeUnits units_changed) {
   layer_mark_dirty(window_get_root_layer(my_window));
 }
 
@@ -72,22 +74,25 @@ void handle_init(void) {
   window_stack_push(my_window, true);
 
   // init hand paths
+  s_second_arrow = gpath_create(&SECOND_HAND_POINTS);
   s_minute_arrow = gpath_create(&MINUTE_HAND_POINTS);
   s_hour_arrow = gpath_create(&HOUR_HAND_POINTS);
   
   Layer *window_layer = window_get_root_layer(my_window);
   GRect bounds = layer_get_bounds(window_layer);
   GPoint center = grect_center_point(&bounds);
+  gpath_move_to(s_second_arrow, center);
   gpath_move_to(s_minute_arrow, center);
   gpath_move_to(s_hour_arrow, center);
   
-  tick_timer_service_subscribe(MINUTE_UNIT, handle_minute_tick);
+  tick_timer_service_subscribe(SECOND_UNIT, handle_second_tick);
   
   // Force a refresh to position the hands correctly
   layer_mark_dirty(window_get_root_layer(my_window));
 }
 
 void handle_deinit(void) {
+  gpath_destroy(s_second_arrow);
   gpath_destroy(s_minute_arrow);
   gpath_destroy(s_hour_arrow);
   
