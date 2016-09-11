@@ -1,0 +1,31 @@
+{
+    "author": "mattcarus@gmail.com",
+    "dependencies": {},
+    "keywords": [],
+    "name": "world-face",
+    "pebble": {
+        "displayName": "world-face",
+        "enableMultiJS": true,
+        "messageKeys": [],
+        "projectType": "native",
+        "resources": {
+            "media": [
+                {
+                    "file": "images/world",
+                    "name": "IMG_WORLD",
+                    "targetPlatforms": null,
+                    "type": "bitmap"
+                }
+            ]
+        },
+        "sdkVersion": "3",
+        "targetPlatforms": [
+            "chalk"
+        ],
+        "uuid": "2468df67-e87b-4898-afe9-705e57d10796",
+        "watchapp": {
+            "watchface": false
+        }
+    },
+    "version": "1.0.0"
+}
